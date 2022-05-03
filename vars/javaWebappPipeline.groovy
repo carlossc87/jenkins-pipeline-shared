@@ -69,12 +69,12 @@ def call(body) {
             success {
                 emailext body: 'La tarea $JOB_NAME se ha ejecutado correctamente',
                         subject: '$JOB_NAME OK :)',
-                        to: $pipelineParams.email
+                        to: pipelineParams.email
             }
             failure {
                 emailext body: 'Ha fallado la ejecución de la tarea $JOB_NAME',
                         subject: '$JOB_NAME KO :(',
-                        to: $pipelineParams.email  
+                        to: pipelineParams.email  
             }
         }
     }
