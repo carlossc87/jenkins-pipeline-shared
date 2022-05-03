@@ -44,21 +44,27 @@ def call(body) {
                     stage('Analyze'){
                         when {
                             expression { 
-                            return params.SONAR
+                                return params.SONAR
                             }
+                        }
+                        environment {
+                            sonarid = pipelineParams.id
                         }
                         steps {
                             echo 'Analizando código fuente'
                             withCredentials([usernamePassword(credentialsId: 'sonar', usernameVariable: 'SONAR_USER', passwordVariable: 'SONAR_PASS')]) {
-                                sh 'mvn sonar:sonar -Dsonar.host.url=$sonar_host -Dsonar.projectKey=${pipelineParams.id} -Dsonar.projectName=${pipelineParams.id} -Dsonar.login=$SONAR_USER -Dsonar.password=$SONAR_PASS'
+                                sh 'mvn sonar:sonar -Dsonar.host.url=$sonar_host -Dsonar.projectKey=$sonarid -Dsonar.projectName=$sonarid -Dsonar.login=$SONAR_USER -Dsonar.password=$SONAR_PASS'
                             }
                         }
                     }
                     stage('Deploy'){
+                        environment {
+                            tomcat_path = pipelineParams.context
+                        }
                         steps {
                             echo 'Desplegando'
                             withCredentials([usernamePassword(credentialsId: 'tomcat', usernameVariable: 'TOMCAT_USER', passwordVariable: 'TOMCAT_PASS')]) {
-                                sh 'mvn org.apache.tomcat.maven:tomcat7-maven-plugin:2.1:redeploy-only -Dmaven.tomcat.url=$tomcat_manager -Dmaven.tomcat.path=/${pipelineParams.context} -Dtomcat.username=$TOMCAT_USER -Dtomcat.password=$TOMCAT_PASS'
+                                sh 'mvn org.apache.tomcat.maven:tomcat7-maven-plugin:2.1:redeploy-only -Dmaven.tomcat.url=$tomcat_manager -Dmaven.tomcat.path=/$tomcat_path -Dtomcat.username=$TOMCAT_USER -Dtomcat.password=$TOMCAT_PASS'
                             }
                         }
                     }
