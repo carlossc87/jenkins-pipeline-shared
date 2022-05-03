@@ -48,7 +48,7 @@ def call(body) {
                             }
                         }
                         environment {
-                            sonarid = pipelineParams.id
+                            sonarid = "${pipelineParams.id}"
                         }
                         steps {
                             echo 'Analizando código fuente'
@@ -59,7 +59,7 @@ def call(body) {
                     }
                     stage('Deploy'){
                         environment {
-                            tomcat_path = pipelineParams.context
+                            tomcat_path = "${pipelineParams.context}"
                         }
                         steps {
                             echo 'Desplegando'
